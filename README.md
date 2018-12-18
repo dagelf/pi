@@ -48,7 +48,7 @@ Remove everything except the first line that starts with /proc in fstab, add /sy
 
     # vi etc/fstab
     proc            /proc           proc    defaults          0       0
-    sysfs 			/sys 			sysfs	defaults 		  0 	  0
+    sysfs 		/sys 			sysfs	defaults 		  0 	  0
     
 Make it start ssh on boot:
 
@@ -144,13 +144,13 @@ You can then SSH into your Pi once it's booted up by doing an SSH into the IP ad
 
 To write my SD card image to an actual SD card, I had to, on the server:
 
-   $ sudo cp $HOME/Downloads/pi.img /nfs/client1/mnt
+    $ sudo cp $HOME/Downloads/pi.img /nfs/client1/mnt
 
 To make the file visible to the Pi at /mnt, and then on the Pi:
 
-   $ sudo su
-   # dd if=/mnt/pi.img of=/dev/mmcblk0 bs=4k &
-   # while sudo kill -SIGUSR1 %1; do sleep 1; done # to monitor progress
+    $ sudo su
+    # dd if=/mnt/pi.img of=/dev/mmcblk0 bs=4k &
+    # while sudo kill -SIGUSR1 %1; do sleep 1; done # to monitor progress
     
 **PS Don't set up server intensive tasks on your Pi to run from your SD Card, rather use NFS like here, or attach a removable hard drive or SSD - according to reports on various forums, SD Cards last from days to weeks, to maybe a year if you are lucky, if you write to them often!**
 
