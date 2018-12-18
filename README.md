@@ -151,6 +151,10 @@ Enable NFS on your server: (and test it)
     # showmount -e
     Export list for server:
     /nfs/client1 192.168.10.0/24
+    # cat /proc/fs/nfs/exports
+    # Version 1.1
+    # Path Client(Flags) # IPs
+    /nfs/client1	192.168.10.0/24(rw,no_root_squash,sync,wdelay,no_subtree_check,uuid=3b6ace17:e18e4834:96f5c0eb:5cbe2796,sec=1)
 
 Now serve DHCP on your lan port and get ready to boot up your Pi:
 
