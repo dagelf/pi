@@ -1,10 +1,10 @@
 # Raspberry Pi 3 B+ LAN / pxe boot with NFS root (if you don't have an SD card or reader)
 
-I didn't have a way to write an SD card, so I booted up my Pi 3 B+ over LAN and wrote the SD card from the Pi itself. I used my Ubuntu 18.04 laptop as the server, and connected the Pi to the LAN port on my laptop, while my laptop was on Wi-Fi.
+I didn't have a way to write an SD card, so I booted up my Pi 3 B+ over LAN and wrote the SD card from the Pi itself. 
 
-My Wi-Fi IP address was in the 192.168.1.x range so I set up the LAN port as 192.168.10.x. The LAN device name is eno1. (Usually it's eth0, eth1 or so.)
+I used my Ubuntu 18.04 laptop as the server, and connected the Pi to the LAN port on my laptop, while my laptop was on Wi-Fi, and shared the laptop internet with the Pi via the LAN socket. My Wi-Fi IP address was in the 192.168.1.x range so I set up the LAN port as 192.168.10.x. The LAN device name was eno1. (In other linuxes it's often eth0, eth1 or so.)
 
-These steps should also work from one Pi to another. (Or to many, via a network switch - but in that case it would need some expanding to serve different disk images or filesystems to the different Pi's!)
+These steps should also work with a Pi as a server. (Or from one Pi to many, via a network switch - but in that case it would need some expanding to serve different disk images or filesystems to the different Pi's!)
 
 Visit [raspberrypi.org](https://www.raspberrypi.org/downloads/raspbian/) and download the latest image, or:
 
@@ -109,7 +109,7 @@ Configure an IP addres on your network interface:
 
     # ifconfig eno1 192.168.10.1 up
 
-If you want to give your Pi internet access through the server:
+If you want to give your Pi internet access through the server: (this is super useful in a lot of networking settings too!)
 
     # echo 1 > /proc/sys/net/ipv4/ip_forward
     # iptables -P FORWARD ACCEPT
@@ -118,10 +118,40 @@ If you want to give your Pi internet access through the server:
 Enable NFS on your server: (and test it)
    
     # apt-get install nfs-kernel-server
+    # vi /etc/exports
+
+    # /etc/exports: the access control list for filesystems which may be exported
+    #               to NFS clients.  See exports(5).
+    #
+    # Example for NFSv2 and NFSv3:
+    # /srv/homes       hostname1(rw,sync,no_subtree_check) hostname2(ro,sync,no_subtree_check)
+    #
+    # Example for NFSv4:
+    # /srv/nfs4        gss/krb5i(rw,sync,fsid=0,crossmnt,no_subtree_check)
+    # /srv/nfs4/homes  gss/krb5i(rw,sync,no_subtree_check)
+    #
+    /nfs/client1 192.168.10.0/24(rw,sync,no_subtree_check,no_root_squash)
+
+    :w
+    :q
     # exportfs -ra
     # systemctl restart nfs-kernel-service
+    
+    # systemctl status nfs-server.service
+    ● nfs-server.service - NFS server and services
+    Loaded: loaded (/lib/systemd/system/nfs-server.service; enabled; vendor preset: enabled)
+    Active: active (exited) since Tue 2018-12-18 12:23:02 GMT; 10h ago
+    Main PID: 9364 (code=exited, status=0/SUCCESS)
+    Tasks: 0 (limit: 4915)
+    CGroup: /system.slice/nfs-server.service
 
-   
+    Dec 18 12:23:02 server systemd[1]: Starting NFS server and services...
+    Dec 18 12:23:02 server systemd[1]: Started NFS server and services.
+
+    # showmount -e
+    Export list for server:
+    /nfs/client1 192.168.10.0/24
+
 Now serve DHCP on your lan port and get ready to boot up your Pi:
 
     # dnsmasq -d -i eno1 -F 192.168.10.1,192.168.10.199 --enable-tftp --tftp-root=/nfs/client1/boot --pxe-service=0,"Raspberry Pi Boot" 
