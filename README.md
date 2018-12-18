@@ -1,6 +1,6 @@
 # Raspberry Pi 3 B+ LAN / pxe boot with NFS root (if you don't have an SD card or reader)
 
-I didn't have a way to write an SD card, so I booted up my Pi 3 B+ over LAN and wrote the SD card from the Pi itself. 
+I didn't have a way to write an SD card, so I booted up my Pi 3 B+ over LAN and wrote the SD card from the Pi itself. Unlike some reports, I didn't have to do anything on or to my Pi out of the box. (You do have to set a flag if your Pi contains a bootable SD card, or else it will just boot from the card instead of the LAN.)
 
 I used my Ubuntu 18.04 laptop as the server, and connected the Pi to the LAN port on my laptop, while my laptop was on Wi-Fi, and shared the laptop internet with the Pi via the LAN socket. My Wi-Fi IP address was in the 192.168.1.x range so I set up the LAN port as 192.168.10.x. The LAN device name was eno1. (In other linuxes it's often eth0, eth1 or so.)
 
