@@ -1,6 +1,10 @@
 # Raspberry Pi 3 B+ LAN / pxe boot with NFS root (if you don't have an SD card or reader)
 
-I didn't have a way to write an SD card, so I booted up my Pi 3 B+ over LAN and wrote the SD card from the Pi itself. I used my laptop as the server, and connected the Pi to the LAN port on my laptop, while my laptop was on Wi-Fi.
+I didn't have a way to write an SD card, so I booted up my Pi 3 B+ over LAN and wrote the SD card from the Pi itself. I used my Ubuntu 18.04 laptop as the server, and connected the Pi to the LAN port on my laptop, while my laptop was on Wi-Fi.
+
+My Wi-Fi IP address was in the 192.168.1.x range so I set up the LAN port as 192.168.10.x. The LAN device name is eno1. (Usually it's eth0, eth1 or so.)
+
+These steps should also work from one Pi to another. (Or to many, via a network switch - but in that case it would need some expanding to serve different disk images or filesystems to the different Pi's!)
 
 Visit [raspberrypi.org](https://www.raspberrypi.org/downloads/raspbian/) and download the latest image, or:
 
@@ -70,7 +74,7 @@ Change the default user to your default user on the server: (optional)
     # sed s@:pi@:$Ug -i etc/groups
     # mv home/pi home/$U
     
-If you're on a Linux that uses NetworkManager and systemd-resolved (eg. Debian or Ubuntu) and you want full control over your ethenet socket, so this before: 
+If you're on a Linux that uses NetworkManager and systemd-resolved (eg. Debian or Ubuntu) and you want full control over your ethenet socket, do this before: 
 
     # vi /etc/udev/rules.d/00-net.rules 
     
@@ -137,6 +141,20 @@ You can then SSH into your Pi once it's booted up by doing an SSH into the IP ad
     permitted by applicable law.
 
     pi@raspberrypi:~ $ 
+
+To write my SD card image to an actual SD card, I had to, on the server:
+
+   $ sudo cp $HOME/Downloads/pi.img /nfs/client1/mnt
+
+To make the file visible to the Pi at /mnt, and then on the Pi:
+
+   $ sudo su
+   # dd if=/mnt/pi.img of=/dev/mmcblk0 bs=4k &
+   # while sudo kill -SIGUSR1 %1; do sleep 1; done # to monitor progress
+    
+**PS Don't set up server intensive tasks on your Pi to run from your SD Card, rather use NFS like here, or attach a removable hard drive or SSD - according to reports on various forums, SD Cards last from days to weeks, to maybe a year if you are lucky, if you write to them often!**
+
+
 
     
                           
