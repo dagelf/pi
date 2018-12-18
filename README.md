@@ -182,6 +182,10 @@ To make the file visible to the Pi at /mnt, and then on the Pi:
     # dd if=/mnt/pi.img of=/dev/mmcblk0 bs=4k &
     # while sudo kill -SIGUSR1 %1; do sleep 1; done # to monitor progress
     
+See also
+
+    $ sudo raspi-config
+    
 **PS** Don't set up server intensive tasks on your Pi to run from your SD Card, rather use NFS like here, or attach a removable hard drive or SSD - according to reports on various forums, SD Cards last from days to weeks, to maybe a year if you are lucky, if you write to them often.
 
 
