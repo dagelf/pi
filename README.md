@@ -193,11 +193,10 @@ See also
 ### Thanks to / References
 
 This document is the result of about an hour or two of "hacking", and probably around 20 reboots and some Googling to get it working. Turned out to be nothing major, just a few typos. So one or two of the above steps might not even be necessary... I have attempted to contribute back fixes. 
-
-    https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/net_tutorial.md
-    http://nfs.sourceforge.net/nfs-howto/ar01s07.html
-    https://hackernoon.com/raspberry-pi-headless-install-462ccabd75d0?gi=768e5160971a
-    https://raspberrypi.stackexchange.com/questions/48350/nfsroot-boot-fails-nfs-server-reports-the-request
+https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/net_tutorial.md
+http://nfs.sourceforge.net/nfs-howto/ar01s07.html
+https://hackernoon.com/raspberry-pi-headless-install-462ccabd75d0?gi=768e5160971a
+https://raspberrypi.stackexchange.com/questions/48350/nfsroot-boot-fails-nfs-server-reports-the-request
     
 **PS** Don't set up server intensive tasks on your Pi to run from your SD Card, rather use NFS like here, or attach a removable hard drive or SSD - according to reports on various forums, SD Cards last from days to weeks, to maybe a year if you are lucky, if you write to them often.
 
