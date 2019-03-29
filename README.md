@@ -88,7 +88,7 @@ If you're on a Linux that uses NetworkManager and systemd-resolved (eg. Debian o
     # vi /etc/NetworkManager/NetworkManager.conf
     [main]
     plugins=ifupdown,keyfile
-    dns=default  # add this
+    dns=none  # add this
 
     [ifupdown]
     managed=false
@@ -98,7 +98,9 @@ If you're on a Linux that uses NetworkManager and systemd-resolved (eg. Debian o
  
     :w
     :q 
-    
+
+    # echo nameserver 1.1.1.1 > /etc/resolv.conf
+
     # systemctl restart network
     # systemctl restart NetworkManager
     # systemctl disable systemd-resolved.service
