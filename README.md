@@ -109,6 +109,8 @@ If you're on a Linux that uses NetworkManager and systemd-resolved (eg. Debian o
     # systemctl disable dnsmasq.service
     # systemctl stop dnsmasq.service
     # rm /etc/resolv.conf  # this is a symlink to a dynamic file, will automatically be recreated 
+    # I have also seen newer firefoxes take over port :53, to disable this open about:config and
+    # look for network.dns.offline-localhost and set it to false
     
 Configure an IP addres on your network interface: 
 
@@ -161,6 +163,7 @@ Enable NFS on your server: (and test it)
     # Path Client(Flags) # IPs
     /nfs/client1	192.168.10.0/24(rw,no_root_squash,sync,wdelay,no_subtree_check,uuid=3b6ace17:e18e4834:96f5c0eb:5cbe2796,sec=1)
 
+    # note that you can't run docker etc. on a client nfs path, if you need something like that you will need to have some sort of coordinated service running on the server
 Now serve DHCP on your lan port and get ready to boot up your Pi:
 
     # dnsmasq -d -i eno1 -F 192.168.10.1,192.168.10.199 --enable-tftp --tftp-root=/nfs/client1/boot --pxe-service=0,"Raspberry Pi Boot" 
