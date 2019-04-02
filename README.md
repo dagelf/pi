@@ -105,6 +105,9 @@ If you're on a Linux that uses NetworkManager and systemd-resolved (eg. Debian o
     # systemctl restart NetworkManager
     # systemctl disable systemd-resolved.service
     # systemctl stop systemd-resolved.service
+    # For some reason Ubuntu sets dnsmasq up as a service when you explicitly install it, undo it!
+    # systemctl disable dnsmasq.service
+    # systemctl stop dnsmasq.service
     # rm /etc/resolv.conf  # this is a symlink to a dynamic file, will automatically be recreated 
     
 Configure an IP addres on your network interface: 
