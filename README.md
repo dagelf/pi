@@ -31,11 +31,12 @@ Then some set-up:
     add map loop30p1 (253:0): 0 89854 linear 7:30 8192
     add map loop30p2 (253:1): 0 3547136 linear 7:30 98304
 
+    # if /dev/mapper/loop30p1 doesn't exist: 
     # mknod /dev/loop30p1 b 253 0 # might not be needed
     # mknod /dev/loop30p2 b 253 1 # might not be needed
     # mkdir /mnt/pi
-    # mount /dev/loopXXp2 /mnt/pi
-    # mount /dev/loopXXp1 /mnt/pi/boot
+    # mount /dev/loopXXp2 /mnt/pi      # or /dev/mapper/loopXXp2
+    # mount /dev/loopXXp1 /mnt/pi/boot # or /dev/mapper/loopXXp1
     # rsync -xav /mnt/pi /nfs/client1
     # cd /nfs/client1
     
