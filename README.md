@@ -52,7 +52,7 @@ Remove everything except the first line that starts with /proc in fstab, add /sy
     proc            /proc           proc    defaults          0       0
     sysfs 		/sys 			sysfs	defaults 		  0 	  0
     
-Make it start ssh on boot:
+Make it start ssh on boot: (This is pi specific, just like the config.txt file)
 
     # touch /nfs/pi1/boot/ssh
     
@@ -176,7 +176,7 @@ Now serve DHCP on your lan port and get ready to boot up your Pi:
 
     # dnsmasq -d -i eno1 -F 192.168.10.1,192.168.10.199 --enable-tftp --tftp-root=/nfs/pi1/boot --pxe-service=0,"Raspberry Pi Boot" 
 
-Plug in the power on your Pi and you should see the DHCP responses and files being served to your Pi. 
+Plug in the power on your Pi and you should see the DHCP responses and files being served to your Pi. On the latest version of raspbian I couldn't SSH in on the first boot, but only on the second. I waited at least 3 minutes on the first boot, then just power cycled it, it took about 2 minutes to boot up but then I could ssh in. 
 
 You can then SSH into your Pi once it's booted up by doing an SSH into the IP address shown by dnsmasq:
 
