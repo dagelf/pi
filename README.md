@@ -26,18 +26,19 @@ Then some set-up:
 
     $ sudo su # this is just easier than adding sudo in front of all of the below
     # mkdir /nfs
-    # mkdir /nfs/client1
+    # mkdir /nfs/pi1
     # kpartx -av pi.img   # or 2018-11-13-raspbian-stretch-lite.img
     add map loop30p1 (253:0): 0 89854 linear 7:30 8192
     add map loop30p2 (253:1): 0 3547136 linear 7:30 98304
 
+    # echo /dev/mapper/loop*  # check the loop device names
     # if /dev/mapper/loop30p1 doesn't exist: 
-    # mknod /dev/loop30p1 b 253 0 # might not be needed
-    # mknod /dev/loop30p2 b 253 1 # might not be needed
+    # mknod /dev/loop30p1 b 253 0 # might not be needed, numbers from kpartx output
+    # mknod /dev/loop30p2 b 253 1 # might not be needed, numbers from kpartx output
     # mkdir /mnt/pi
     # mount /dev/loopXXp2 /mnt/pi      # or /dev/mapper/loopXXp2
     # mount /dev/loopXXp1 /mnt/pi/boot # or /dev/mapper/loopXXp1
-    # rsync -xav /mnt/pi/ /nfs/pi1
+    # rsync -xav /mnt/pi/ /nfs/pi1     # trailing / needed else it copies the top directory into the target
     # cd /nfs/pi1
     
 You are now in the pi NFS filesystem, get it ready to boot:
@@ -63,10 +64,6 @@ If you want to add your ssh key: (optional)
     # cat /home/XXXX/.ssh/id_rsa.pub >> /nfs/pi1/home/pi/.ssh/authorized_keys
     # chmod -R 600 /nfs/pi1/home/pi/.ssh
    
-To give access to everyone who has access to the server: (optional)
-
-    # cat /home/XXXX/.ssh/authorized_keys >> /nfs/pi1/home/pi/.ssh/authorized_keys
-
 Change the default user to your default user on the server: (optional)
     
     U=newuser 
@@ -78,7 +75,7 @@ Change the default user to your default user on the server: (optional)
     sed s@pi:@$U:g -i /nfs/pi1/etc/groups
     mv /nfs/pi1/home/pi /nfs/pi1/home/$U
     
-If you're on a Linux that uses NetworkManager and systemd-resolved (eg. Debian or Ubuntu) and you want full control over your ethenet socket, do this before: 
+If you're on a Linux that uses NetworkManager and systemd-resolved (eg. Debian or Ubuntu) and you want full control over your ethernet interface, which you will need if you want to run dnsmasq yourself, do this before the next steps: 
 
     # ip link || ifconfig # to find your ethernet interface name - unlikely that it will be eno1 or eth1
 
@@ -121,14 +118,16 @@ If you're on a Linux that uses NetworkManager and systemd-resolved (eg. Debian o
     
 Configure an IP addres on your network interface - your interface name will likely be different:
 
-    # ip link || ifconfig # to find your ethernet interface name 
+    # ip link || ifconfig # to find your ethernet interface name, you hopefully still have this from above... :-) 
     # ifconfig eno1 192.168.10.1 up
 
-If you want to give your Pi internet access through the server: (this is super useful in a lot of networking settings too!)
+If you want to give your Pi internet access through the server: (this is all you need to turn your server into a router)
 
     # echo 1 > /proc/sys/net/ipv4/ip_forward
-    # iptables -P FORWARD ACCEPT
+    # iptables -P FORWARD ACCEPT                    # docker changes this policy for you, on of its many evils
     # iptables -t nat -A POSTROUTING -j MASQUERADE
+
+See https://www.google.com/search?q=iptables if you want to know more
 
 Enable NFS on your server: (and test it)
    
