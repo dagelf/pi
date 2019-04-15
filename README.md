@@ -44,7 +44,7 @@ Then some set-up:
 You are now in the pi NFS filesystem, get it ready to boot:
 
     # vi /nfs/pi1/boot/cmdline.txt
-    dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=/dev/nfs nfsroot=192.168.10.1:/nfs/client1,tcp,v3 rootfstype=nfs rw ip=dhcp rootwait elevator=deadline 
+    dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=/dev/nfs nfsroot=192.168.10.1:/nfs/pi1,tcp,v3 rootfstype=nfs rw ip=dhcp rootwait elevator=deadline 
 
 Remove everything except the first line that starts with /proc in fstab, add /sys:
 
@@ -164,17 +164,17 @@ Enable NFS on your server: (and test it)
 
     # showmount -e
     Export list for server:
-    /nfs/client1 192.168.10.0/24
+    /nfs/pi1 192.168.10.0/24
 
     # cat /proc/fs/nfs/exports  # this only shows what is actually used, so need to boot the pi first
     # Version 1.1
     # Path Client(Flags) # IPs
-    /nfs/client1	192.168.10.0/24(rw,no_root_squash,sync,wdelay,no_subtree_check,uuid=3b6ace17:e18e4834:96f5c0eb:5cbe2796,sec=1)
+    /nfs/pi1    192.168.10.0/24(rw,no_root_squash,sync,wdelay,no_subtree_check,uuid=3b6ace17:e18e4834:96f5c0eb:5cbe2796,sec=1)
 
     # note that you can't run docker etc. on a client nfs path, if you need something like that you will need to have some sort of coordinated service running on the server
 Now serve DHCP on your lan port and get ready to boot up your Pi:
 
-    # dnsmasq -d -i eno1 -F 192.168.10.1,192.168.10.199 --enable-tftp --tftp-root=/nfs/client1/boot --pxe-service=0,"Raspberry Pi Boot" 
+    # dnsmasq -d -i eno1 -F 192.168.10.1,192.168.10.199 --enable-tftp --tftp-root=/nfs/pi1/boot --pxe-service=0,"Raspberry Pi Boot" 
 
 Plug in the power on your Pi and you should see the DHCP responses and files being served to your Pi. 
 
@@ -194,7 +194,7 @@ You can then SSH into your Pi once it's booted up by doing an SSH into the IP ad
 
 To write my SD card image to an actual SD card, I had to, on the server:
 
-    $ sudo cp $HOME/Downloads/pi.img /nfs/client1/mnt
+    $ sudo cp $HOME/Downloads/pi.img /nfs/pi1/mnt
 
 To make the file visible to the Pi at /mnt, and then on the Pi:
 
