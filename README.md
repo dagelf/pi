@@ -54,8 +54,8 @@ You are now in the pi NFS filesystem, get it ready to boot:
 Remove everything except the first line that starts with /proc in fstab, add /sys:
 
     # vi /nfs/pi1/etc/fstab
-    proc            /proc           proc    defaults          0       0
-    sysfs 		/sys 			sysfs	defaults 		  0 	  0
+    proc    /proc       proc    defaults          0       0
+    sysfs   /sys        sysfs	defaults 		  0 	  0
     
 Make it start ssh on boot: (This is pi specific, just like the config.txt file)
 
@@ -186,7 +186,7 @@ Plug in the power on your Pi and you should see the DHCP responses and files bei
 You can then SSH into your Pi once it's booted up by doing an SSH into the IP address shown by dnsmasq:
 
     $ ssh 192.168.10.37 -p22 -lpi 
-    Password: raspberry
+    Password: raspberry  # unless you changed the password and default user
   
     The programs included with the Debian GNU/Linux system are free software;
     the exact distribution terms for each program are described in the
