@@ -12,15 +12,20 @@ Visit [raspberrypi.org](https://www.raspberrypi.org/downloads/raspbian/) and dow
     ...
     $ unzip 2018-11-13-raspbian-stretch-full.zip
 
+Or:
+    
+    $ cd Downloads; rtorrent https://downloads.raspberrypi.org/raspbian_full_latest.torrent  # Ctrl+Q to quit
+    # then unzip the image
+
 Or: (untested)
 
-    $ wget -O pi.zip https://downloads.raspberrypi.org/raspbian_full_latest
+    $ cd Downloads; wget -O pi.zip https://downloads.raspberrypi.org/raspbian_full_latest
     $ mkdir _pi
     $ unzip pi.zip -d _pi/
     $ mv _pi/*.img pi.img
     $ rmdir _pi 
     $ ls -l pi.img
-    $ # rm pi.zip
+    $ # rm pi.zip # rm pi.img # wipe the zip if you have enough space to keep the img, which is useful to write to SD card
 
 Then some set-up:
 
