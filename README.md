@@ -37,45 +37,50 @@ Then some set-up:
     # mkdir /mnt/pi
     # mount /dev/loopXXp2 /mnt/pi      # or /dev/mapper/loopXXp2
     # mount /dev/loopXXp1 /mnt/pi/boot # or /dev/mapper/loopXXp1
-    # rsync -xav /mnt/pi /nfs/client1
-    # cd /nfs/client1
+    # rsync -xav /mnt/pi/ /nfs/pi1
+    # cd /nfs/pi1
     
 You are now in the pi NFS filesystem, get it ready to boot:
 
-    # vi boot/cmdline.txt
+    # vi /nfs/pi1/boot/cmdline.txt
     dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=/dev/nfs nfsroot=192.168.10.1:/nfs/client1,tcp,v3 rootfstype=nfs rw ip=dhcp rootwait elevator=deadline 
 
 Remove everything except the first line that starts with /proc in fstab, add /sys:
 
-    # vi etc/fstab
+    # vi /nfs/pi1/etc/fstab
     proc            /proc           proc    defaults          0       0
     sysfs 		/sys 			sysfs	defaults 		  0 	  0
     
 Make it start ssh on boot:
 
-    # touch boot/ssh
+    # touch /nfs/pi1/boot/ssh
     
 The default login and password is pi and raspberry    
     
 If you want to add your ssh key: (optional)
 
-    # mkdir home/pi/.ssh
-    # cat /home/XXXX/.ssh/id_rsa.pub >> home/pi/.ssh/authorized_keys
-    # chmod -R 600 home/pi/.ssh
+    # mkdir /nfs/pi1/home/pi/.ssh
+    # cat /home/XXXX/.ssh/id_rsa.pub >> /nfs/pi1/home/pi/.ssh/authorized_keys
+    # chmod -R 600 /nfs/pi1/home/pi/.ssh
    
 To give access to everyone who has access to the server: (optional)
 
-    # cat /home/XXXX/.ssh/authorized_keys >> home/pi/.ssh/authorized_keys
+    # cat /home/XXXX/.ssh/authorized_keys >> /nfs/pi1/home/pi/.ssh/authorized_keys
 
 Change the default user to your default user on the server: (optional)
     
-    # U=newuser 
-    # sed s@:pi@:$Ug -i etc/passwd
-    # sed s@:pi@:$Ug -i etc/shadow
-    # sed s@:pi@:$Ug -i etc/groups
-    # mv home/pi home/$U
+    U=newuser 
+    sed s@:pi@:$Ug -i /nfs/pi1/etc/passwd
+    sed s@:pi@:$Ug -i /nfs/pi1/etc/shadow
+    sed s@:pi@:$Ug -i /nfs/pi1/etc/groups
+    sed s@pi:@$U:g -i /nfs/pi1/etc/passwd
+    sed s@pi:@$U:g -i /nfs/pi1/etc/shadow
+    sed s@pi:@$U:g -i /nfs/pi1/etc/groups
+    mv /nfs/pi1/home/pi /nfs/pi1/home/$U
     
 If you're on a Linux that uses NetworkManager and systemd-resolved (eg. Debian or Ubuntu) and you want full control over your ethenet socket, do this before: 
+
+    # ip link || ifconfig # to find your ethernet interface name - unlikely that it will be eno1 or eth1
 
     # vi /etc/udev/rules.d/00-net.rules 
     
@@ -109,12 +114,14 @@ If you're on a Linux that uses NetworkManager and systemd-resolved (eg. Debian o
     # For some reason Ubuntu sets dnsmasq up as a service when you explicitly install it, undo it!
     # systemctl disable dnsmasq.service
     # systemctl stop dnsmasq.service
-    # rm /etc/resolv.conf  # this is a symlink to a dynamic file, will automatically be recreated 
+    # rm /etc/resolv.conf  # this is a symlink to a dynamic file, which gets automatically overwritten
+    # echo nameserver 1.1.1.1 > /etc/resolv.conf # use cloudflare DNS, or change to your own
     # I have also seen newer firefoxes take over port :53, to disable this open about:config and
     # look for network.dns.offline-localhost and set it to false
     
-Configure an IP addres on your network interface: 
+Configure an IP addres on your network interface - your interface name will likely be different:
 
+    # ip link || ifconfig # to find your ethernet interface name 
     # ifconfig eno1 192.168.10.1 up
 
 If you want to give your Pi internet access through the server: (this is super useful in a lot of networking settings too!)
@@ -138,14 +145,14 @@ Enable NFS on your server: (and test it)
     # /srv/nfs4        gss/krb5i(rw,sync,fsid=0,crossmnt,no_subtree_check)
     # /srv/nfs4/homes  gss/krb5i(rw,sync,no_subtree_check)
     #
-    /nfs/client1 192.168.10.0/24(rw,sync,no_subtree_check,no_root_squash)
+    /nfs/pi1 192.168.10.0/24(rw,sync,no_subtree_check,no_root_squash)
 
     :w
     :q
     # exportfs -ra
-    # systemctl restart nfs-kernel-service
+    # systemctl restart nfs-kernel-service || systemctl stop nfs-mountd.service # the latter is on latest Ubuntu
     
-    # systemctl status nfs-server.service
+    # systemctl status nfs-server.service || systemctl status nfs-mountd.service 
     ● nfs-server.service - NFS server and services
     Loaded: loaded (/lib/systemd/system/nfs-server.service; enabled; vendor preset: enabled)
     Active: active (exited) since Tue 2018-12-18 12:23:02 GMT; 10h ago
@@ -159,7 +166,8 @@ Enable NFS on your server: (and test it)
     # showmount -e
     Export list for server:
     /nfs/client1 192.168.10.0/24
-    # cat /proc/fs/nfs/exports
+
+    # cat /proc/fs/nfs/exports  # this only shows what is actually used, so need to boot the pi first
     # Version 1.1
     # Path Client(Flags) # IPs
     /nfs/client1	192.168.10.0/24(rw,no_root_squash,sync,wdelay,no_subtree_check,uuid=3b6ace17:e18e4834:96f5c0eb:5cbe2796,sec=1)
