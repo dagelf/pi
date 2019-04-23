@@ -107,21 +107,21 @@ If you're on a Linux that uses NetworkManager and systemd-resolved (eg. Debian o
     :w
     :q 
 
-    # systemctl restart network
-    # systemctl restart NetworkManager
+    systemctl restart network
+    systemctl restart NetworkManager
     
     # add DNSStubListener=no - and while you're at it: DNS=9.9.9.9 1.1.1.1, DNSSEC=true, DNSOverTLS=opportunistic
-    # sudo vi /etc/systemd/resolved.conf 
+    sudo vi /etc/systemd/resolved.conf 
     
-Or if you want to go back to the old way of doing DNS and don't care about DNS privacy or being DNS poisoned or spoofed: 
+    # Or if you want to go back to the old way of doing DNS and don't care about DNS privacy or being DNS poisoned or spoofed: 
 
-    # systemctl disable systemd-resolved.service
-    # systemctl stop systemd-resolved.service
+    systemctl disable systemd-resolved.service
+    systemctl stop systemd-resolved.service
     # For some reason Ubuntu sets dnsmasq up as a service when you explicitly install it, undo it!
-    # systemctl disable dnsmasq.service
-    # systemctl stop dnsmasq.service
-    # rm /etc/resolv.conf  # this is a symlink to a dynamic file, which gets automatically overwritten
-    # echo nameserver 1.1.1.1 | sudo tee /etc/resolv.conf # use cloudflare DNS, or change to your own
+    systemctl disable dnsmasq.service
+    systemctl stop dnsmasq.service
+    sudo rm /etc/resolv.conf  # this is a symlink to a dynamic file, which gets automatically overwritten
+    echo nameserver 1.1.1.1 | sudo tee /etc/resolv.conf # use cloudflare DNS, or change to your own
     # I have also seen newer firefoxes take over port :53, to disable this open about:config 
     # and look for network.dns.offline-localhost and set it to false
     
